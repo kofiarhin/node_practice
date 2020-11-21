@@ -2,7 +2,8 @@ const express = require("express")
 const app = express();
 const User = require("./model/user")
 const mongoose = require("mongoose")
-const auth = require("./middleware/auth")
+const auth = require("./middleware/auth");
+const Product = require("./model/product");
 require("./db/mongoose")
 
 // setup middlewares
@@ -13,6 +14,43 @@ const handleErrors = (errors) => {
 
     
 }
+
+
+// create product
+app.post("/products", async(req, res) => {
+    
+    try {
+            const product  = new Product(req.body);
+            await product.save()
+            res.status(201).send()
+    }catch(e) {
+            res.status(400).send()
+    }
+    
+})
+
+
+
+
+app.get("/products/:id", async(req, res) => {
+
+    try {
+
+        const product = await Product.findById(req.params.id);
+        res.send(product)
+
+    }catch(e) {
+            res.status(404).send()
+    }
+})
+
+app.get("/", (req, res) => {
+
+    
+    res.send({ message: "hello world"})
+})
+
+// get users from database
 app.get("/users", async (req, res ) => {
 
     const users = await User.find({});
