@@ -1,0 +1,39 @@
+* {
+    box-sizing: border-box;
+}
+html, body {
+    font-family: 'Open Sans', sans-serif;
+}
+.title {
+    text-align: center;
+}
+form {
+    width: 540px;
+    max-width: 90%;
+    margin: 0 auto;
+}
+input,
+textarea,
+button
+ {
+    display: block;
+    width: 100%;
+    margin-bottom: 1rem;
+
+}
+
+input {
+    padding: 1rem;
+    text-indent: 20px;
+    font-size: 1.2rem;
+}
+
+
+button {
+    padding: 0.8rem 0rem;
+    outline: none;
+    border: none;
+    cursor: pointer;
+    background: black;
+    color: white;
+}
