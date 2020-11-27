@@ -1,15 +1,45 @@
-const request = require("supertest")
 const app = require("../server/app")
+const request = require("supertest")
 const mongoose = require("mongoose")
+const jwt = require("jsonwebtoken");
+const User = require("../server/model/user")
+const userOneId = mongoose.Types.ObjectId();
+const token = jwt.sign({_id: userOneId}, "password123");
 
 
-test("pass", async () => {
 
-        const response = await request(app).get("/products?search=macbook").send().expect(200);
+
+
+const userOne = {
+
+    _id: userOneId,
+    name: "kofi arhin",
+    email: "kofiarhin@gmail.com",
+    password: "password",
+    token
+}
+
+
+beforeEach(async() => {
+
+    await User.deleteMany();
+    await new User(userOne).save()
 
 })
 
-test("no search provided", async() => {
-
-            const response = await request(app).get("/products").send().expect(400)
+afterAll( async() => {
+    await mongoose.connection.close()
 })
+
+test("pass", () => {})
+
+
+// test file upload
+
+test("file upload", async () => {
+
+
+            const response = await request(app).post("/uploads")
+            .set("Authorization", `Bearer ${token}`)
+            .attach("avatar", "tests/fixtures/test.jpg").expect(200)
+});
