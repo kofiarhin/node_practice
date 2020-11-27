@@ -31,7 +31,6 @@ afterAll( async() => {
     await mongoose.connection.close()
 })
 
-test("pass", () => {})
 
 
 // test file upload
