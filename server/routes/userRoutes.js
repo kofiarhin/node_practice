@@ -1,5 +1,6 @@
 const { Router, request } = require("express");
 const User = require("../model/user");
+const mongoose = require("mongoose");
 
 const router = Router();
 
@@ -19,6 +20,10 @@ router.get("/users/:id", async (req, res) => {
   const id = req.params.id;
 
   if (!id) return res.status(400).send();
+
+  const isValidId = mongoose.Types.ObjectId.isValid(id);
+
+  if (!isValidId) return res.status(404).send();
 
   const user = await User.findById(id);
 
@@ -52,7 +57,7 @@ router.delete("/users/:id", async (req, res) => {
 
   const user = await User.findByIdAndDelete(id);
 
-  if (!user) return res.status(404).send();
+  if (!user) return res.status(404).send(1);
   res.send();
 });
 module.exports = router;
