@@ -1,12 +1,9 @@
-const mongoose =  require("mongoose")
+const mongoose = require("mongoose")
+// connect to database
 
-// const  url = "mongodb+srv://test:Cantoment69@cluster0.lj8un.mongodb.net/node-auth"
-
-const  url = process.env.mongo_url
-
-mongoose.connect(url, {
-    useCreateIndex: true,
-    useUnifiedTopology: true,
+mongoose.connect("mongodb://localhost:27017/playground", {
     useNewUrlParser: true,
-    useFindAndModify: false
-}).then ( ()  => console.log("connected to database"))
+    useUnifiedTopology: true,
+    useCreateIndex: true
+}).then( () => console.log("connected to database!"))
+.catch(e => console.log(e.message)) 
