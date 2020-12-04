@@ -4,16 +4,46 @@ const mongoose = require("mongoose");
 
 const router = Router();
 
-router.get("/users", (req, res) => {
-  res.send({ message: "send user details" });
-});
+
+
+router.post("/users/login", async(req, res) => {
+
+  try {
+    const user = await User.findByCredentials(req.body.email, req.body.password);
+    const token = user.generateAuthToken()
+
+    res.send({ user, token})
+
+  }catch (e) {
+
+    res.status(404).send()
+  }
+
+
+
+  
+
+})
+
+
 
 // create user
 router.post("/users", async (req, res) => {
-  const user = new User(req.body);
-  await user.save();
-  res.send(user);
+
+try {
+
+  const  user = new User(req.body);
+  const token = await user.generateAuthToken();
+  res.status(201).send({ user, token})
+
+}catch(e) {
+  res.status(500).send()
+}
+
+
 });
+
+
 
 // get user from database``
 router.get("/users/:id", async (req, res) => {
@@ -30,6 +60,8 @@ router.get("/users/:id", async (req, res) => {
   if (!user) return res.status(404).send();
   res.send(user);
 });
+
+
 
 // update user
 router.patch("/users/:id", async (req, res) => {
@@ -50,6 +82,9 @@ router.patch("/users/:id", async (req, res) => {
   res.send(user);
 });
 
+
+
+// delete user
 router.delete("/users/:id", async (req, res) => {
   const id = req.params.id;
 
