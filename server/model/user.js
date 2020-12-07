@@ -31,21 +31,28 @@ userSchema.methods.generateAuthToken = async function () {
 
     const user = this;
     user.tokens = user.tokens.concat({ token});
+
+    await user.save()
     return token;
 };
 
 // find user by credentials
 userSchema.statics.findByCredentials = async(email, password) =>  {
 
-     const user = await User.findOne({ email})
 
+
+     const user = await User.findOne({ email})
+  
      if(!user) {
        throw new Error("user not found")
      }
 
      const isMatch = await bcrypt.compare(password, user.password)
 
+  
+
     if(!isMatch)  throw new Error("user not found")
+
 
     return user;
 }

@@ -2,16 +2,23 @@ const mongoose = require("mongoose")
 const app = require("../server/app")
 const User = require("../server/model/user")
 const request = require("supertest")
-
+const auth = require("../server/middleware/auth")
+const jwt = require("jsonwebtoken")
 
 const userOneId = mongoose.Types.ObjectId()
 const userTwoId = mongoose.Types.ObjectId()
+const userOneToken =  jwt.sign({ _id: userOneId}, "password123")
 
 const userOne = {
   _id: userOneId,
   name: "kofi arhin",
   email: "kofiarhin@gmail.com",
-  password: "password"
+  password: "password",
+  tokens: [
+    { 
+      token: userOneToken
+    }
+  ]
 }
 const userTwo = {
   _id: userTwoId,
@@ -39,6 +46,8 @@ test("should just pass", () => {})
 test("create user", async() => {
 
   const response = await request(app).post("/users").send(userTwo).expect(201)
+
+  expect(response.body).toHaveProperty("token")
 })
 
 
@@ -61,5 +70,23 @@ test("get user from database", async() => {
 
   const response = await request(app).get("/users/"+userOne._id).send().expect(200);
 
-  console.log(response.body)
 })
+
+
+// test login
+test("login user with valid credentials",  async() => {
+
+  const response = await request(app).post("/users/login").send({email: userOne.email, password: userOne.password}).expect(200)
+
+  expect(response.body).toHaveProperty("token")
+  expect(response.body.user.name).toBe(userOne.name)
+})
+
+
+// test cannot login with invalid credentials
+test("cannot login with invalid credentials", async()  => {
+
+        const response = await request(app).post("/users/login").send({ email: userOne.email, password: "x"}).expect(400)
+})
+
+

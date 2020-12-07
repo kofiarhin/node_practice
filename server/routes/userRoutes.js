@@ -1,5 +1,6 @@
-const { Router} = require("express")
+const { Router, request} = require("express")
 const User = require("../model/user")
+const auth = require("../middleware/auth")
 
 const router = Router()
 
@@ -12,7 +13,8 @@ router.post("/users", async( req, res) => {
     try {
       
       await user.save()
-      res.status(201).send()
+      const token = await user.generateAuthToken()
+      res.status(201).send({ user, token})
 
     }catch(e) {
       res.status(400).send()
@@ -38,5 +40,36 @@ router.get("/users/:id", async(req, res) => {
   }
   
 })
+
+
+// login user
+
+router.post("/users/login",  async(req, res) => {
+
+  const { email ="", password ="" } = req.body;
+
+
+  try {
+
+    const user = await User.findByCredentials(email, password);
+    const token = await user.generateAuthToken()
+    res.send({ user, token})
+
+  }catch (e) {
+
+    res.status(400).send()
+
+  }
+
+
+
+})
+
+
+router.get("/users/me", auth,  (req, res) => {
+
+  res.send()
+})
+
 
 module.exports = router;
